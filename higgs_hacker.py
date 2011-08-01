@@ -364,7 +364,7 @@ class THiggsHacker:
 
 	def dq2_run(self, pattern):
 		L = pattern.split('.')
-		print(L)
+
 		if len(L) > 1:
 			return int(L[1])
 		else:
