@@ -375,7 +375,7 @@ class THiggsHacker:
 	#####################################################################
 
 	def getJobIDs(self, timestamp):
-		date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(timestamp))
+		date = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(timestamp))
 
 		status, output = Client.getJobIDsInTimeRange(date)
 
@@ -476,7 +476,7 @@ class THiggsHacker:
 				# TIMESTAMP				    #
 				#############################################
 
-				timestamp = time.time()
+				timestamp = int(time.time())
 
 				#############################################
 				# PANDA 1				    #
@@ -492,7 +492,11 @@ class THiggsHacker:
 				# PANDA 2				    #
 				#############################################
 
+				time.sleep(10)
+
 				jobIDs = self.getJobIDs(timestamp)
+
+				print(jobIDs)
 
 				if len(jobIDs) == 1:
 					jobID1 = int(jobIDs[0])
@@ -526,7 +530,7 @@ class THiggsHacker:
 				# TIMESTAMP				    #
 				#############################################
 
-				timestamp = time.time()
+				timestamp = int(time.time())
 
 				#############################################
 				# PANDA 1				    #
@@ -541,6 +545,8 @@ class THiggsHacker:
 				#############################################
 				# PANDA 2				    #
 				#############################################
+
+				time.sleep(10)
 
 				jobIDs = self.getJobIDs(timestamp)
 
