@@ -578,6 +578,7 @@ class THiggsHacker:
 
 		for value in values:
 
+			jobID1 = value['jobID1']
 			jobID2 = value['jobID2']
 
 			if self.jobIsFinished(jobID2) == False:
@@ -595,7 +596,7 @@ class THiggsHacker:
 http://panda.cern.ch/server/pandamon/query?job=*&jobsetID=%d&user=Jerome%20Odier
 http://panda.cern.ch/server/pandamon/query?job=*&jobsetID=%d&user=Jerome%20Odier
 
-''' % (value['run'], value['jobID1'], value['jobID2']))
+''' % (value['run'], jobID1, jobID2))
 
 				#############################################
 
