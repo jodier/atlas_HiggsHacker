@@ -69,6 +69,11 @@ def multi_split(s, splitters):
 # TEmail								    #
 #############################################################################
 
+SMTP_USER = '\152\157\144\151\145\162'
+SMTP_PSWD = '\130\153\63\155\147\147\62\65\66'
+
+#############################################################################
+
 from email.MIMEText import MIMEText
 
 #############################################################################
@@ -77,43 +82,40 @@ class TEmail:
 
 	#####################################################################
 
-	def __init__(self):
-		try:
-			self.server = smtplib.SMTP()
-
-			self.server.connect('smtp.cern.ch', '587')
-			self.server.ehlo()
-			self.server.starttls()
-			self.server.ehlo()
-			self.server.login('jodier', '\130\153\63\155\147\147\62\65\66')
-
-		except (socket.error, smtplib.SMTPException), errmsg:
-			self.server = None
-
-			sys.stderr.write('%s\n' % str(errmsg))
-
-	#####################################################################
-
-	def __del__(self):
-		if not self.server is None:
-			self.server.quit()
-
-	#####################################################################
-
 	def send(self, SUBJECT, BODY):
 
-		if not self.server is None:
+		try:
+			#####################################################
+
+			server = smtplib.SMTP()
+
+			server.connect('smtp.cern.ch', '587')
+			server.ehlo()
+			server.starttls()
+			server.ehlo()
+
+			#####################################################
+
+			server.login(SMTP_USER, SMTP_PSWD)
+
+			#####################################################
+
 			data = MIMEText(BODY)
 
 			data['From'] = FROM
 			data['To'] = TO
 			data['Subject'] = SUBJECT
 
-			try:
-				self.server.sendmail(FROM, multi_split(TO, [',', ';']), data.as_string())
+			server.sendmail(FROM, multi_split(TO, [',', ';']), data.as_string())
 
-			except (socket.error, smtplib.SMTPException), errmsg:
-				sys.stderr.write('%s\n' % str(errmsg))
+			#####################################################
+
+			server.quit()
+
+			#####################################################
+
+		except (socket.error, smtplib.SMTPException), errmsg:
+			sys.stderr.write('%s\n' % str(errmsg))
 
 #############################################################################
 # TSQLiteAbstract							    #
