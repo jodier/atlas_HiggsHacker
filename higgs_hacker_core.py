@@ -16,7 +16,7 @@ TO = 'jerome.odier@cern.ch'		#,elodie.tiouchichine@cern.ch
 
 #############################################################################
 
-import os, sys, time, socket, commands, threading
+import sys, time, socket, commands
 
 #############################################################################
 

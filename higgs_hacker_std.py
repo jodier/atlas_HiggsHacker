@@ -11,13 +11,13 @@
 #
 #############################################################################
 
-import higgs_hacker_core
+import os, sys, time, commands, threading, higgs_hacker_core
 
 #############################################################################
 # THiggsHacker								    #
 #############################################################################
 
-class THiggsHacker(THiggsHackerAbstract):
+class THiggsHacker(higgs_hacker_core.THiggsHackerAbstract):
 
 	#####################################################################
 	# SQL								    #
@@ -69,11 +69,11 @@ class THiggsHacker(THiggsHackerAbstract):
 				# PANDA 1				    #
 				#############################################
 
-				status, output = commands.getstatusoutput('./tools/higgs_analysis.sh %s %s' % (value['in_ds'], value['out_ds']))
+				status, output = commands.getstatusoutput('./tools/higgs_analysis_std.sh %s %s' % (in_ds, out_ds))
 
 				if status != 0:
 					self.error('Could not launch \'higgs_analysis.sh\' !\n%d' % output)
-					sys.exit(status)
+					continue
 
 				print(output)
 

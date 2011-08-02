@@ -11,13 +11,13 @@
 #
 #############################################################################
 
-import higgs_hacker_core
+import os, sys, time, commands, threading, higgs_hacker_core
 
 #############################################################################
 # THiggsHacker								    #
 #############################################################################
 
-class THiggsHacker(THiggsHackerAbstract):
+class THiggsHacker(higgs_hacker_core.THiggsHackerAbstract):
 
 	#####################################################################
 	# SQL								    #
@@ -83,7 +83,7 @@ class THiggsHacker(THiggsHackerAbstract):
 
 				if status != 0:
 					self.error('Could not launch \'uD3PD.sh\' !\n%d' % output)
-					sys.exit(status)
+					continue
 
 				print(output)
 
@@ -135,7 +135,7 @@ class THiggsHacker(THiggsHackerAbstract):
 
 				if status != 0:
 					self.error('Could not launch \'higgs_analysis.sh\' !\n%d' % output)
-					sys.exit(status)
+					continue
 
 				print(output)
 
