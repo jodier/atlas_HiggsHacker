@@ -119,19 +119,19 @@ class THiggsHacker(higgs_hacker_core.THiggsHackerAbstract):
 				# LOG					    #
 				#############################################
 
-				self.success('New run available: %08d :-)\nJob \'%d\' is \'success\' !\nhttp://panda.cern.ch/server/pandamon/query?job=*&jobsetID=%d&user=Jerome%%20Odier\n' % (value['run'], jobID))
+				self.success('New run available: %08d :-)\nJob \'%d\' is \'success\' !\nhttp://panda.cern.ch/server/pandamon/query?job=*&jobsetID=%d&user=Jerome%%20Odier\n' % (value['run'], jobID, jobID))
 
 				#############################################
 
 			else:
 				if self.jobIsFailed(jobID) != False:
 					self.execute('UPDATE DataSet SET state = "FAILED" WHERE jobID = "%d";' % jobID)
-					self.error('New run available: %08d :-(\nJob \'%d\' is \'failed   \' !\nhttp://panda.cern.ch/server/pandamon/query?job=*&jobsetID=%d&user=Jerome%%20Odier\n' % (value['run'], jobID))
+					self.error('New run available: %08d :-(\nJob \'%d\' is \'failed   \' !\nhttp://panda.cern.ch/server/pandamon/query?job=*&jobsetID=%d&user=Jerome%%20Odier\n' % (value['run'], jobID, jobID))
 					continue
 
 				if self.jobIsCancelled(jobID) != False:
 					self.execute('UPDATE DataSet SET state = "FAILED" WHERE jobID = "%d";' % jobID)
-					self.error('New run available: %08d :-(\nJob \'%d\' is \'cancelled\' !\nhttp://panda.cern.ch/server/pandamon/query?job=*&jobsetID=%d&user=Jerome%%20Odier\n' % (value['run'], jobID))
+					self.error('New run available: %08d :-(\nJob \'%d\' is \'cancelled\' !\nhttp://panda.cern.ch/server/pandamon/query?job=*&jobsetID=%d&user=Jerome%%20Odier\n' % (value['run'], jobID, jobID))
 					continue
 
 		higgsHacker.commit()
@@ -196,9 +196,9 @@ if __name__ == '__main__':
 	try:
 		while True:
 			higgsHacker.cron1('data11_7TeV.*.physics_Egamma.merge.NTUP_2LHSG2.*_p600/', 'user.%s.data11_7TeV.%08d.physics_Egamma.merge.2Lhiggs-analysis_std-%d.p600/')
-			higgsHacker.cron1('data11_7TeV.*.physics_Egamma.merge.NTUP_HSG2.*_p600/'  , 'user.%s.data11_7TeV.%08d.physics_Egamma.merge.higgs-analysis-%d_std.p600/')
-			higgsHacker.cron1('data11_7TeV.*.physics_Muons.merge.NTUP_2LHSG2.*_p600/' , 'user.%s.data11_7TeV.%08d.physics_Muons.merge.2Lhiggs-analysis-%d_std.p600/')
-			higgsHacker.cron1('data11_7TeV.*.physics_Muons.merge.NTUP_HSG2.*_p600/'   , 'user.%s.data11_7TeV.%08d.physics_Muons.merge.higgs-analysis-%d_std.p600/')
+#			higgsHacker.cron1('data11_7TeV.*.physics_Egamma.merge.NTUP_HSG2.*_p600/'  , 'user.%s.data11_7TeV.%08d.physics_Egamma.merge.higgs-analysis-%d_std.p600/')
+#			higgsHacker.cron1('data11_7TeV.*.physics_Muons.merge.NTUP_2LHSG2.*_p600/' , 'user.%s.data11_7TeV.%08d.physics_Muons.merge.2Lhiggs-analysis-%d_std.p600/')
+#			higgsHacker.cron1('data11_7TeV.*.physics_Muons.merge.NTUP_HSG2.*_p600/'   , 'user.%s.data11_7TeV.%08d.physics_Muons.merge.higgs-analysis-%d_std.p600/')
 
 			time.sleep(30)
 
