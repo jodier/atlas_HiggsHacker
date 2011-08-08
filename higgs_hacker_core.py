@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 #############################################################################
 # Author  : Jerome ODIER
 # Email   : jerome.odier@cern.ch
@@ -11,12 +9,11 @@
 #
 #############################################################################
 
-FROM = 'jerome.odier@cern.ch'
-TO = 'jerome.odier@cern.ch'		#,elodie.tiouchichine@cern.ch
+import higgs_hacker_conf
 
 #############################################################################
 
-import sys, time, socket, commands
+import os, re, sys, time, socket, commands
 
 #############################################################################
 
@@ -26,7 +23,7 @@ try:
 except ImportError:
 	print('Warning: could not import "smtplib" !')
 
-#############################################################################
+##
 
 try:
 	import sqlite3
@@ -34,7 +31,7 @@ try:
 except ImportError:
 	print('Warning: could not import "sqlite3" !')
 
-#############################################################################
+##
 
 try:
 	import MySQLdb
@@ -60,14 +57,17 @@ def SQLBuildDic(array1, array2):
 
 	return M
 
-
 #############################################################################
 
 def multi_split(s, splitters):
 	for splitter in splitters:
 		s = s.replace(splitter, '|')
 
-	return s.split('|')
+	L = s.split('|')
+
+	return [
+		item.strip() for item in L if len(item.strip()) > 0
+	]
 
 #############################################################################
 # TEmail								    #
@@ -95,17 +95,17 @@ class TEmail:
 
 			#####################################################
 
-			server.login('\152\157\144\151\145\162', '\130\153\63\155\147\147\62\65\66')
+			server.login(higgs_hacker_conf.EMAIL_USER, higgs_hacker_conf.EMAIL_PSWD)
 
 			#####################################################
 
 			data = MIMEText(BODY)
 
-			data['From'] = FROM
-			data[ 'To' ] =  TO
+			data['From'] = higgs_hacker_conf.EMAIL_FROM
+			data[ 'To' ] = higgs_hacker_conf.EMAIL_DEST
 			data['Subject'] = SUBJECT
 
-			server.sendmail(FROM, multi_split(TO, [',', ';']), data.as_string())
+			server.sendmail(higgs_hacker_conf.EMAIL_FROM, multi_split(higgs_hacker_conf.EMAIL_DEST, [',', ';']), data.as_string())
 
 			#####################################################
 
@@ -228,11 +228,47 @@ class THiggsHackerAbstract:
 	#####################################################################
 
 	def __init__(self):
+		#############################################################
+
 		self.engine = None
 
 		self.mailBox = TEmail()
 
-		self.gridPass, self.gridVoms = PsubUtils.checkGridProxy('', False, False)
+		self.tagRegex = re.compile('[^a-z0-9][a-z][0-9]+')
+
+		#############################################################
+
+		if higgs_hacker_conf.PATH_HIGGS_HACKER == '':
+			higgs_hacker_conf.PATH_HIGGS_HACKER = '.'
+
+		#############################################################
+
+		self.path_root_std = '%s/root_std' % higgs_hacker_conf.PATH_HIGGS_HACKER
+		self.path_plot_std = '%s/plot_std' % higgs_hacker_conf.PATH_HIGGS_HACKER
+
+		if not os.path.isdir(self.path_root_std):
+			os.mkdir(self.path_root_std)
+
+		if not os.path.isdir(self.path_plot_std):
+			os.mkdir(self.path_plot_std)
+
+		#############################################################
+
+		self.path_root_exp = '%s/root_exp' % higgs_hacker_conf.PATH_HIGGS_HACKER
+		self.path_plot_exp = '%s/plot_exp' % higgs_hacker_conf.PATH_HIGGS_HACKER
+
+		if not os.path.isdir(self.path_root_exp):
+			os.mkdir(self.path_root_exp)
+
+		if not os.path.isdir(self.path_plot_exp):
+			os.mkdir(self.path_plot_exp)
+
+	#####################################################################
+	# LOG								    #
+	#####################################################################
+
+	def checkGridProxy(self):
+		self.gridPass, self.gridVoms = PsubUtils.checkGridProxy(higgs_hacker_conf.GRID_PSWD, False, False)
 
 	#####################################################################
 	# LOG								    #
@@ -321,7 +357,11 @@ class THiggsHackerAbstract:
 			print('Could not execute \'dq2-ls %s\' !' % pattern)
 			sys.exit(status)
 
-		return output.split('\n')
+		output = output.split('\n')
+
+		output.sort()
+
+		return output
 
 	#####################################################################
 
@@ -344,6 +384,31 @@ class THiggsHackerAbstract:
 
 	#####################################################################
 
+	def dq2_complete(self, pattern):
+		status, output = commands.getstatusoutput('dq2-ls -r %s' % pattern)
+
+		if status != 0:
+			print('Could not execute \'dq2-ls -r %s\' !' % pattern)
+			sys.exit(status)
+
+		result = False
+
+		output = output.split('\n')
+
+		for line in output:
+			if line.find( 'COMPLETE:' ) > 0\
+			   and			       \
+			   line.find('INCOMPLETE:') < 0:
+				L = multi_split(line, [':', ','])
+
+				if len(L) > 1:
+					result = True
+					break
+
+		return result
+
+	#####################################################################
+
 	def dq2_run(self, pattern):
 		L = pattern.split('.')
 
@@ -351,6 +416,15 @@ class THiggsHackerAbstract:
 			return int(L[1])
 		else:
 			return int(0x00)
+
+	#####################################################################
+
+	def dq2_tag(self, pattern):
+		result = self.tagRegex.findall(pattern)
+
+		return [
+			item[1:] for item in result
+		]
 
 	#####################################################################
 	# PANDA								    #
@@ -363,7 +437,7 @@ class THiggsHackerAbstract:
 
 		if status != 0:
 			print 'Error: panda !'
-			sys.exit(status)
+			return []
 
 		output.sort()
 
@@ -397,7 +471,7 @@ class THiggsHackerAbstract:
 			result = False
 
 			for item in L:
-				if L[item][0] != 'failed':
+				if L[item][0] == 'failed':
 					result = True
 					pass
 
@@ -414,7 +488,7 @@ class THiggsHackerAbstract:
 			result = False
 
 			for item in L:
-				if L[item][0] != 'cancelled':
+				if L[item][0] == 'cancelled':
 					result = True
 					pass
 

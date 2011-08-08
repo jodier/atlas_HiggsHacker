@@ -4,9 +4,7 @@
 
 DIR=`pwd`
 
-HOME=/afs/cern.ch/user/j/jodier
-
-cd /$HOME/testarea/16.6.X/higgs_analysis
+cd $3
 
 #############################################################################
 
@@ -49,7 +47,7 @@ prun --exec "higgs_analysis --grid=prun --enable-ER -o output.root %IN" --bexec 
 --outDS $2 \
 --extFile $SRCS \
 --outputs output.root \
---excludedSite ANALY_CERN_XROOTD
+--excludedSite ANALY_CERN_XROOTD $4
 
 #############################################################################
 

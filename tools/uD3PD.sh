@@ -4,13 +4,11 @@
 
 DIR=`pwd`
 
-HOME=/afs/cern.ch/user/j/jodier
-
-cd /$HOME/testarea/16.6.X/uD3PD/run
+cd $3
 
 #############################################################################
 
-pathena --inDS $1 --outDS $2 uD3PD.py
+pathena --inDS $1 --outDS $2 $4 uD3PD.py
 
 #############################################################################
 
