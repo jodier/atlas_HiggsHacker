@@ -63,7 +63,7 @@ class THiggsHacker(higgs_hacker_core.THiggsHackerAbstract):
 				date = self.dq2_date(in_ds)
 				run = self.dq2_run(in_ds)
 
-				if run >= 178044 and run <= 186755 && len(values) == 0:
+				if run >= 178044 and run <= 186755 and len(values) == 0:
 
 					out_ds = out_pattern % (higgs_hacker_conf.GRID_USER, run, int(time.time()))
 
